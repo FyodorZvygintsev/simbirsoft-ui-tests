@@ -1,100 +1,99 @@
-﻿# UI-автотесты формы Practice Automation
+# Simbirsoft UI Tests
 
-Проект UI-автоматизации для формы:
-https://practice-automation.com/form-fields/
+UI-автотесты для формы: https://practice-automation.com/form-fields/
+
+Проект выполнен на Python 3.10 с использованием Selenium WebDriver, pytest и Allure.
+Реализованы паттерны: Page Object Model, Page Factory, Fluent Interface.
 
 ## Стек
 - Python 3.10
 - pytest
 - Selenium WebDriver (Chrome)
 - Allure
+- python-dotenv
 - GitHub Actions
 
 ## Установка
 ```bash
 py -3.10 -m venv .venv
 .venv\Scripts\activate
-python -m pip install -r requirements.txt
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
 ## Запуск тестов
-Быстрый запуск без UI (`ui`-тесты отфильтрованы через marker):
+
+Запуск всех тестов:
 ```bash
-python -m pytest
+pytest
 ```
 
-Запуск только UI-тестов:
+Запуск в headless-режиме:
 ```bash
-python -m pytest -m ui
+pytest --headless
 ```
 
-Запуск UI-тестов в headless-режиме:
+Запуск только smoke-тестов:
 ```bash
-python -m pytest -m ui --headless
+pytest -m smoke
 ```
 
-Строгий режим (ошибка при недоступном драйвере):
+Запуск только regression-тестов:
 ```bash
-python -m pytest -m ui --headless --strict-driver
+pytest -m regression
 ```
 
-Запуск с локальным chromedriver:
-```bash
-python -m pytest -m ui --chrome-driver-path "C:\tools\chromedriver.exe"
-```
+## Allure-отчёт
 
-Запуск с локальными путями к chromedriver и Chrome:
+Генерация и просмотр локально:
 ```bash
-python -m pytest -m ui --chrome-driver-path "C:\tools\chromedriver.exe" --chrome-binary-path "C:\Program Files\Google\Chrome\Application\chrome.exe"
-```
-
-## Allure
-Локальная генерация:
-```bash
-python -m pytest -m ui --headless --alluredir=allure-results
+pytest --alluredir=allure-results
 allure serve allure-results
 ```
 
-## CI
-В репозитории добавлен workflow:
-`.github/workflows/ui-tests.yml`
+## Allure-отчёт (GitHub Pages)
 
-Что делает pipeline:
-- запускает UI-тесты в headless режиме;
-- включает строгий режим драйвера (`--strict-driver`);
-- сохраняет `allure-results` как artifact;
-- публикует Allure-отчет в отдельную ветку `gh-pages`.
+[Ссылка на отчёт](https://fyodorzvygintsev.github.io/simbirsoft-ui-tests/)
+
+## Скриншот Allure-отчёта
+
+![Allure Report](docs/allure_report.png)
 
 ## Структура проекта
 ```text
-project/
-+-- .github/
-|   L-- workflows/
-|       L-- ui-tests.yml
-+-- fixtures/
-+-- pages/
-+-- tests/
-+-- utils/
-+-- requirements.txt
-+-- pytest.ini
-+-- README.md
-L-- .gitignore
+simbirsoft-ui-tests/
+├── .env                    # Конфигурация (URL, таймаут, headless)
+├── .github/workflows/      # CI/CD pipeline (GitHub Actions)
+├── config.py               # Загрузка настроек из .env
+├── conftest.py             # Фикстуры pytest (браузер, ожидания, Allure)
+├── pytest.ini              # Настройки pytest и маркеры
+├── requirements.txt        # Зависимости Python
+├── pages/
+│   └── form_page.py        # Page Object - логика работы с формой
+├── utils/
+│   └── page_factory.py     # Page Factory - обёртка над Selenium
+├── tests/
+│   └── test_form.py        # Тесты (smoke, позитивный, негативный)
+└── docs/
+    └── allure_report.png   # Скриншот Allure-отчёта
 ```
 
 ## Тест-кейсы
+
 ### Позитивный тест-кейс
 Название: `test_submit_form_positive`
 
 Шаги:
 1. Открыть страницу формы.
-2. Заполнить `Name`.
-3. Заполнить `Password`.
-4. Выбрать `Milk` и `Coffee`.
-5. Выбрать цвет `Yellow`.
-6. Выбрать любой вариант в `Do you like automation?`.
-7. Ввести `name@example.com` в поле Email.
-8. В Message записать:
-количество инструментов в блоке `Automation tools` и инструмент с самым длинным названием.
+2. Заполнить поле `Name`.
+3. Заполнить поле `Password`.
+4. В блоке `What is your favorite drink?` выбрать `Milk` и `Coffee`.
+5. В блоке `What is your favorite color?` выбрать `Yellow`.
+6. В поле `Do you like automation?` выбрать любой вариант.
+7. В поле `Email` ввести `name@example.com`.
+8. В поле `Message` указать:
+   - количество инструментов из блока `Automation tools`;
+   - инструмент с самым длинным названием.
 9. Нажать `Submit`.
 
 Ожидаемый результат:
@@ -105,8 +104,8 @@ L-- .gitignore
 
 Шаги:
 1. Открыть страницу формы.
-2. Не заполнять обязательное поле `Name`.
-3. Заполнить остальные поля.
+2. Оставить обязательное поле `Name` пустым.
+3. Заполнить остальные поля формы.
 4. Нажать `Submit`.
 
 Ожидаемый результат:
