@@ -1,3 +1,4 @@
+from selenium.common.exceptions import ElementClickInterceptedException, StaleElementReferenceException
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -26,7 +27,18 @@ class PageFactory:
         element.send_keys(value)
 
     def click(self, locator: tuple[str, str]) -> None:
-        self.clickable(locator).click()
+        element = self.clickable(locator)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", element)
+
+        for _ in range(2):
+            try:
+                self.clickable(locator).click()
+                return
+            except (ElementClickInterceptedException, StaleElementReferenceException):
+                element = self.clickable(locator)
+                self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", element)
+
+        self.driver.execute_script("arguments[0].click();", self.clickable(locator))
 
     def select_by_value(self, locator: tuple[str, str], value: str) -> None:
         select = Select(self.element(locator))
