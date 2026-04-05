@@ -10,6 +10,7 @@ from utils.page_factory import PageFactory
 
 
 class FormPage:
+    URL = "https://practice-automation.com/form-fields/"
     FORM = (By.ID, "feedbackForm")
     NAME_INPUT = (By.ID, "name-input")
     PASSWORD_INPUT = (By.CSS_SELECTOR, "#feedbackForm input[type='password']")
@@ -23,14 +24,13 @@ class FormPage:
     AUTOMATION_TOOLS_ITEMS = (By.CSS_SELECTOR, "#feedbackForm ul li")
     ALERT_EXPECTED_TEXT = "Message received!"
 
-    def __init__(self, driver: WebDriver, base_url: str, timeout: int = 10) -> None:
+    def __init__(self, driver: WebDriver, timeout: int = 10) -> None:
         self.driver = driver
-        self.base_url = base_url
         self.timeout = timeout
         self.page = PageFactory(driver=driver, timeout=timeout)
 
     def open(self) -> "FormPage":
-        self.driver.get(self.base_url)
+        self.driver.get(self.URL)
         return self
 
     def is_loaded(self) -> bool:

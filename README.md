@@ -1,4 +1,4 @@
-# UI-автотесты формы Practice Automation
+﻿# UI-автотесты формы Practice Automation
 
 Проект UI-автоматизации для формы:
 https://practice-automation.com/form-fields/
@@ -18,40 +18,40 @@ python -m pip install -r requirements.txt
 ```
 
 ## Запуск тестов
-Быстрый запуск без UI:
+Быстрый запуск без UI (`ui`-тесты отфильтрованы через marker):
 ```bash
 python -m pytest
 ```
 
-Запуск UI-тестов:
+Запуск только UI-тестов:
 ```bash
-python -m pytest --run-ui
+python -m pytest -m ui
 ```
 
 Запуск UI-тестов в headless-режиме:
 ```bash
-python -m pytest --run-ui --headless
+python -m pytest -m ui --headless
 ```
 
 Строгий режим (ошибка при недоступном драйвере):
 ```bash
-python -m pytest --run-ui --headless --strict-driver
+python -m pytest -m ui --headless --strict-driver
 ```
 
 Запуск с локальным chromedriver:
 ```bash
-python -m pytest --run-ui --chrome-driver-path "C:\tools\chromedriver.exe"
+python -m pytest -m ui --chrome-driver-path "C:\tools\chromedriver.exe"
 ```
 
 Запуск с локальными путями к chromedriver и Chrome:
 ```bash
-python -m pytest --run-ui --chrome-driver-path "C:\tools\chromedriver.exe" --chrome-binary-path "C:\Program Files\Google\Chrome\Application\chrome.exe"
+python -m pytest -m ui --chrome-driver-path "C:\tools\chromedriver.exe" --chrome-binary-path "C:\Program Files\Google\Chrome\Application\chrome.exe"
 ```
 
 ## Allure
 Локальная генерация:
 ```bash
-python -m pytest --run-ui --headless --alluredir=allure-results
+python -m pytest -m ui --headless --alluredir=allure-results
 allure serve allure-results
 ```
 

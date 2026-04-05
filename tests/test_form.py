@@ -6,9 +6,9 @@ from pages.form_page import FormPage
 
 @pytest.mark.ui
 @allure.title("Позитивный: успешная отправка формы")
-def test_submit_form_positive(driver, base_url: str, ui_timeout: int) -> None:
+def test_submit_form_positive(driver) -> None:
     with allure.step("Открыть страницу формы"):
-        page = FormPage(driver=driver, base_url=base_url, timeout=ui_timeout).open()
+        page = FormPage(driver=driver).open()
 
     with allure.step("Проверить, что форма загружена"):
         assert page.is_loaded()
@@ -32,9 +32,9 @@ def test_submit_form_positive(driver, base_url: str, ui_timeout: int) -> None:
 
 @pytest.mark.ui
 @allure.title("Негативный: отправка с пустым Name")
-def test_submit_form_negative_empty_name(driver, base_url: str, ui_timeout: int) -> None:
+def test_submit_form_negative_empty_name(driver) -> None:
     with allure.step("Открыть страницу формы"):
-        page = FormPage(driver=driver, base_url=base_url, timeout=ui_timeout).open()
+        page = FormPage(driver=driver).open()
 
     with allure.step("Проверить, что форма загружена"):
         assert page.is_loaded()

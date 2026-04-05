@@ -32,7 +32,7 @@ jobs:
         id: run_tests
         continue-on-error: true
         run: |
-          pytest --run-ui --headless --strict-driver --alluredir=allure-results
+          pytest -m ui --headless --strict-driver --alluredir=allure-results
 
       - name: Upload Allure results artifact
         if: always()
