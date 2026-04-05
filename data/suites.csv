@@ -1,0 +1,5 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","523","Smoke: страница формы открывается","tests","Sun Apr 05 12:42:57 UTC 2026","passed","Sun Apr 05 12:42:58 UTC 2026","","test_ui_bootstrap","",""
+"","5543","Негативный: отправка с пустым Name","tests","Sun Apr 05 12:42:51 UTC 2026","passed","Sun Apr 05 12:42:57 UTC 2026","","test_form","",""
+"","0","test_project_bootstrap","tests","Sun Apr 05 12:42:57 UTC 2026","passed","Sun Apr 05 12:42:57 UTC 2026","","test_smoke","",""
+"","3708","Позитивный: успешная отправка формы","tests","Sun Apr 05 12:42:47 UTC 2026","passed","Sun Apr 05 12:42:51 UTC 2026","","test_form","",""
