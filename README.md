@@ -1,12 +1,14 @@
 # UI-автотесты формы Practice Automation
 
-Проект UI-автоматизации для формы: https://practice-automation.com/form-fields/
+Проект UI-автоматизации для формы:
+https://practice-automation.com/form-fields/
 
-## Технологии
+## Стек
 - Python 3.10
 - pytest
 - Selenium WebDriver (Chrome)
 - Allure
+- GitHub Actions
 
 ## Установка
 ```bash
@@ -16,53 +18,97 @@ python -m pip install -r requirements.txt
 ```
 
 ## Запуск тестов
+Быстрый запуск без UI:
 ```bash
 python -m pytest
 ```
 
-## Запуск UI-тестов (Chrome)
+Запуск UI-тестов:
 ```bash
 python -m pytest --run-ui
 ```
 
-## Запуск UI-тестов в headless-режиме
+Запуск UI-тестов в headless-режиме:
 ```bash
 python -m pytest --run-ui --headless
 ```
 
-## Запуск UI-тестов с локальным chromedriver
+Строгий режим (ошибка при недоступном драйвере):
+```bash
+python -m pytest --run-ui --headless --strict-driver
+```
+
+Запуск с локальным chromedriver:
 ```bash
 python -m pytest --run-ui --chrome-driver-path "C:\tools\chromedriver.exe"
 ```
 
-## Запуск UI-тестов с локальными путями к chromedriver и Chrome
+Запуск с локальными путями к chromedriver и Chrome:
 ```bash
 python -m pytest --run-ui --chrome-driver-path "C:\tools\chromedriver.exe" --chrome-binary-path "C:\Program Files\Google\Chrome\Application\chrome.exe"
 ```
 
-## Запуск Allure
+## Allure
+Локальная генерация:
 ```bash
-python -m pytest --alluredir=allure-results
+python -m pytest --run-ui --headless --alluredir=allure-results
 allure serve allure-results
 ```
+
+## CI
+В репозитории добавлен workflow:
+`.github/workflows/ui-tests.yml`
+
+Что делает pipeline:
+- запускает UI-тесты в headless режиме;
+- включает строгий режим драйвера (`--strict-driver`);
+- сохраняет `allure-results` как artifact;
+- публикует Allure-отчет в отдельную ветку `gh-pages`.
 
 ## Структура проекта
 ```text
 project/
-+-- tests/
-+-- pages/
-+-- locators/
++-- .github/
+|   L-- workflows/
+|       L-- ui-tests.yml
 +-- fixtures/
++-- pages/
++-- tests/
 +-- utils/
 +-- requirements.txt
 +-- pytest.ini
-+-- .gitignore
-L-- README.md
++-- README.md
+L-- .gitignore
 ```
 
 ## Тест-кейсы
 ### Позитивный тест-кейс
-- Будет добавлен в следующих шагах.
+Название: `test_submit_form_positive`
+
+Шаги:
+1. Открыть страницу формы.
+2. Заполнить `Name`.
+3. Заполнить `Password`.
+4. Выбрать `Milk` и `Coffee`.
+5. Выбрать цвет `Yellow`.
+6. Выбрать любой вариант в `Do you like automation?`.
+7. Ввести `name@example.com` в поле Email.
+8. В Message записать:
+количество инструментов в блоке `Automation tools` и инструмент с самым длинным названием.
+9. Нажать `Submit`.
+
+Ожидаемый результат:
+появляется alert с текстом `Message received!`.
 
 ### Негативный тест-кейс
-- Будет добавлен в следующих шагах.
+Название: `test_submit_form_negative_empty_name`
+
+Шаги:
+1. Открыть страницу формы.
+2. Не заполнять обязательное поле `Name`.
+3. Заполнить остальные поля.
+4. Нажать `Submit`.
+
+Ожидаемый результат:
+- alert не появляется;
+- браузер показывает встроенное сообщение валидации для поля `Name`.

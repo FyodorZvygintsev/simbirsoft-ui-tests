@@ -1,4 +1,5 @@
 import pytest
+import allure
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchDriverException, WebDriverException
 from selenium.webdriver.chrome.options import Options
@@ -44,6 +45,12 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default="",
         help="Путь к исполняемому файлу Chrome (необязательно).",
     )
+    parser.addoption(
+        "--strict-driver",
+        action="store_true",
+        default=False,
+        help="Падать с ошибкой, если ChromeDriver недоступен.",
+    )
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
@@ -82,7 +89,17 @@ def chrome_binary_path(request: pytest.FixtureRequest) -> str:
 
 
 @pytest.fixture(scope="function")
-def driver(is_headless: bool, chrome_driver_path: str, chrome_binary_path: str) -> webdriver.Chrome:
+def strict_driver(request: pytest.FixtureRequest) -> bool:
+    return bool(request.config.getoption("--strict-driver"))
+
+
+@pytest.fixture(scope="function")
+def driver(
+    is_headless: bool,
+    chrome_driver_path: str,
+    chrome_binary_path: str,
+    strict_driver: bool,
+) -> webdriver.Chrome:
     options = Options()
     options.add_argument("--disable-notifications")
     options.add_argument("--start-maximized")
@@ -100,6 +117,13 @@ def driver(is_headless: bool, chrome_driver_path: str, chrome_binary_path: str) 
     try:
         driver_instance = webdriver.Chrome(service=service, options=options)
     except (NoSuchDriverException, WebDriverException) as exc:
+        if strict_driver:
+            pytest.fail(
+                "Chrome WebDriver недоступен в текущей среде. "
+                "Проверь установку браузера/драйвера или передай корректные пути. "
+                f"Детали: {exc}"
+            )
+
         pytest.skip(
             "Chrome WebDriver недоступен в текущей среде. "
             "Передай --chrome-driver-path (и при необходимости --chrome-binary-path). "
@@ -113,3 +137,25 @@ def driver(is_headless: bool, chrome_driver_path: str, chrome_binary_path: str) 
 @pytest.fixture(scope="function")
 def wait(driver: webdriver.Chrome, ui_timeout: int) -> WebDriverWait:
     return WebDriverWait(driver, ui_timeout)
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo) -> None:
+    outcome = yield
+    report = outcome.get_result()
+
+    if report.when != "call" or report.passed:
+        return
+
+    if "driver" not in item.fixturenames:
+        return
+
+    driver_instance = item.funcargs.get("driver")
+    if driver_instance is None:
+        return
+
+    allure.attach(
+        driver_instance.get_screenshot_as_png(),
+        name=f"{item.name}_failure",
+        attachment_type=allure.attachment_type.PNG,
+    )
